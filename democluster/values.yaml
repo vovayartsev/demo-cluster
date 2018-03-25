@@ -1,0 +1,9 @@
+nginx-ingress:
+  controller:
+    service:
+      targetPorts:
+        https: 80
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-ssl-cert: 	arn:aws:acm:us-east-1:122558522240:certificate/7c27d03c-cfc1-4abc-a179-94ef2c1e8de3
+        service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
