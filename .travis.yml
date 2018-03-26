@@ -3,12 +3,25 @@ sudo: false
 before_install:
 - openssl aes-256-cbc -K $encrypted_aeced0429c4b_key -iv $encrypted_aeced0429c4b_iv
   -in .kube-config.enc -out .kube-config -d
-  -in kube-config.enc -out ~/.kube/config -d
+- mkdir -p ~/.kube
+- mv .kube-config ~/.kube/config
 - wget https://kubernetes-helm.storage.googleapis.com/helm-v2.7.2-linux-amd64.tar.gz
 - tar xzvf helm-v2.7.2-linux-amd64.tar.gz
 - mv linux-amd64/helm helm
 - chmod u+x helm
 script:
-  - cat "HELLO FROM VOVA:"
-  - cat ~/.kube/config
-env:
+- |
+  HELM_RELEASE=feature-1
+  PREFIX="-${HELM_RELEASE}.vovayartsev.dyn.tixey.com"
+  function check() {
+    ./helm status $HELM_RELEASE
+  }
+  function install() {
+    ./helm install --name "$HELM_RELEASE" --namespace "$HELM_RELEASE" --set "domainPrefix=$PREFIX" demoapp
+  }
+  function upgrade() {
+    ./helm upgrade --set "domainPrefix=$PREFIX" "$HELM_RELEASE" demoapp
+  }
+  #if [ $TRAVIS_BRANCH != 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then
+    check && upgrade || install
+  #fi
