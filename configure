@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+
+require 'yaml'
+
+branch_name = `git status -bsuno`.gsub(/^#+ ([a-zA-Z0-9\-\/]+).*$/m, '\1')
+
+puts "Detected branch: #{branch_name}"
+puts "----------------------------------------------------"
+
+puts "Probing KIM....."
+puts "--> 123938dj473ys722337ee847dudne7474   #{branch_name}"
+
+puts "Probing PAM...."
+puts "--> hab837304857cc912333667638347777d   develop"
+
+
+VALUES_PATH = 'chart/values.yaml'
+values = YAML.load File.read(VALUES_PATH)
+values["revisions"]["kim"] = "latest"
+values["revisions"]["pam"] = "hello"
+File.write VALUES_PATH, values.to_yaml
+
+puts "\nvalues.yaml updated"

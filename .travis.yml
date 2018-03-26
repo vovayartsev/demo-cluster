@@ -11,19 +11,6 @@ before_install:
 - chmod u+x helm
 script:
 - |
-  HELM_RELEASE="$TRAVIS_BRANCH"
+  HELM_RELEASE=`echo -n $TRAVIS_BRANCH | tr '[:upper:]' '[:lower:]'`
   PREFIX="-${HELM_RELEASE}.vovayartsev.dyn.tixey.com"
-  function check() {
-    ./helm status $HELM_RELEASE
-  }
-  function install() {
-    ./helm install --name "$HELM_RELEASE" --namespace "$HELM_RELEASE" --set "domainPrefix=$PREFIX" .
-  }
-  function upgrade() {
-    ./helm upgrade --set "domainPrefix=$PREFIX" "$HELM_RELEASE" .
-  }
-  if [ $TRAVIS_PULL_REQUEST = 'true' ]; then
-    install
-  else
-    check && upgrade
-  fi
+  ./helm upgrade "$HELM_RELEASE" chart --install --set "domainPrefix=$PREFIX"
